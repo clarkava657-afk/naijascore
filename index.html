@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scoresheet — WAEC Aggregate &amp; CGPA Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#182548;
+    --navy-deep:#0f1830;
+    --gold:#c9962f;
+    --gold-bright:#e0ab3e;
+    --paper:#f6f3ea;
+    --paper-line:#e2ddc9;
+    --ink:#1c1a15;
+    --ink-soft:#5b5648;
+    --green:#3f6b4c;
+    --red:#a8402f;
+    --white:#fffdf8;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--gold);color:var(--navy-deep);}
+  a{color:inherit;}
+  header{
+    background:var(--navy);
+    color:var(--white);
+    padding:2.2rem 1.5rem 2.6rem;
+    position:relative;
+    overflow:hidden;
+  }
+  header::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(201,150,47,0.06) 0 1px, transparent 1px 42px);
+    pointer-events:none;
+  }
+  .header-inner{ max-width:760px; margin:0 auto; position:relative; }
+  .kicker{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.72rem;
+    letter-spacing:.04em;
+    color:var(--gold-bright);
+    margin:0 0 .9rem;
+  }
+  h1{
+    font-family:'Source Serif 4',serif;
+    font-weight:700;
+    font-size:clamp(2rem, 6vw, 2.9rem);
+    line-height:1.08;
+    margin:0 0 .8rem;
+    max-width:14ch;
+  }
+  header p.lede{ font-size:1.02rem; color:#cdd3e4; max-width:46ch; margin:0; }
+  .tabbar{
+    max-width:760px;
+    margin:-1.4rem auto 0;
+    padding:0 1.5rem;
+    position:relative;
+    z-index:2;
+    display:flex;
+    gap:0;
+  }
+  .tab{
+    flex:1;
+    background:var(--white);
+    border:1px solid var(--paper-line);
+    border-bottom:none;
+    padding:.95rem 1rem;
+    font-family:'IBM Plex Sans',sans-serif;
+    font-weight:600;
+    font-size:.92rem;
+    text-align:center;
+    cursor:pointer;
+    color:var(--ink-soft);
+    transition:color .15s ease;
+  }
+  .tab:first-child{border-top-left-radius:3px;}
+  .tab:last-child{border-top-right-radius:3px;}
+  .tab.active{ color:var(--navy); box-shadow:inset 0 3px 0 var(--gold); }
+  main{ max-width:760px; margin:0 auto; padding:0 1.5rem 4rem; }
+  .sheet{
+    background:var(--white);
+    border:1px solid var(--paper-line);
+    border-radius:0 0 4px 4px;
+    padding:1.8rem 1.6rem 2rem;
+  }
+  .field-note{
+    font-size:.88rem;
+    color:var(--ink-soft);
+    margin:0 0 1.4rem;
+    padding-bottom:1.2rem;
+    border-bottom:1px dashed var(--paper-line);
+  }
+  .row{
+    display:grid;
+    grid-template-columns:2.2rem 1fr 6.5rem;
+    gap:.6rem;
+    align-items:center;
+    padding:.5rem 0;
+  }
+  .row-num{ font-family:'IBM Plex Mono',monospace; font-size:.78rem; color:var(--ink-soft); }
+  input[type=text], select{
+    width:100%;
+    font-family:'IBM Plex Sans',sans-serif;
+    font-size:.95rem;
+    padding:.55rem .6rem;
+    border:1px solid #d6d0bd;
+    border-radius:3px;
+    background:var(--paper);
+    color:var(--ink);
+  }
+  select{appearance:none; background:var(--paper) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="6"><path d="M0 0l5 6 5-6z" fill="%235b5648"/></svg>') no-repeat right .7rem center; padding-right:1.8rem;}
+  input:focus, select:focus{outline:2px solid var(--gold); outline-offset:1px;}
+  .rows-wrap{margin-bottom:1.2rem;}
+  .btnbar{display:flex; gap:.7rem; flex-wrap:wrap; margin-top:.6rem;}
+  button{
+    font-family:'IBM Plex Sans',sans-serif;
+    font-weight:600;
+    font-size:.9rem;
+    padding:.65rem 1.1rem;
+    border-radius:3px;
+    border:1px solid var(--navy);
+    cursor:pointer;
+  }
+  .btn-primary{background:var(--navy); color:var(--white);}
+  .btn-primary:hover{background:var(--navy-deep);}
+  .btn-ghost{background:transparent; color:var(--navy); border-color:#c9c3ae;}
+  .btn-ghost:hover{border-color:var(--navy);}
+  .slip{
+    margin-top:1.8rem;
+    border:1px solid var(--gold);
+    border-radius:3px;
+    padding:1.4rem 1.5rem;
+    background:repeating-linear-gradient(135deg, rgba(201,150,47,0.04) 0 12px, transparent 12px 24px), var(--paper);
+    display:none;
+  }
+  .slip.show{display:block;}
+  .slip-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    border-bottom:1px solid var(--paper-line);
+    padding-bottom:.7rem;
+    margin-bottom:.9rem;
+  }
+  .slip-head span{font-family:'IBM Plex Mono',monospace; font-size:.72rem; color:var(--ink-soft);}
+  .slip-title{font-family:'Source Serif 4',serif; font-weight:600; font-size:1rem; color:var(--navy);}
+  .slip-figure{
+    font-family:'Source Serif 4',serif;
+    font-weight:700;
+    font-size:2.6rem;
+    color:var(--navy);
+    line-height:1;
+  }
+  .slip-figure small{font-size:1rem; font-weight:400; color:var(--ink-soft);}
+  .slip-label{font-size:.82rem; color:var(--ink-soft); margin-top:.3rem;}
+  .slip-remark{
+    margin-top:1rem;
+    padding-top:1rem;
+    border-top:1px dashed var(--paper-line);
+    font-size:.92rem;
+  }
+  .remark-good{color:var(--green); font-weight:600;}
+  .remark-mid{color:var(--gold); font-weight:600;}
+  .remark-low{color:var(--red); font-weight:600;}
+  .cgpa-head{
+    display:grid;
+    grid-template-columns:1fr 5rem 6.5rem 2rem;
+    gap:.6rem;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.7rem;
+    color:var(--ink-soft);
+    padding:0 0 .4rem;
+  }
+  .cgpa-row{
+    display:grid;
+    grid-template-columns:1fr 5rem 6.5rem 2rem;
+    gap:.6rem;
+    align-items:center;
+    padding:.4rem 0;
+  }
+  .remove-btn{ background:none; border:none; color:var(--ink-soft); font-size:1.1rem; cursor:pointer; padding:0; }
+  .remove-btn:hover{color:var(--red);}
+  .scale-toggle{display:flex; gap:.5rem; align-items:center; margin-bottom:1rem; font-size:.88rem; color:var(--ink-soft);}
+  .scale-toggle label{display:flex; gap:.35rem; align-items:center; cursor:pointer;}
+  footer{
+    max-width:760px;
+    margin:0 auto;
+    padding:0 1.5rem 3rem;
+    font-size:.82rem;
+    color:var(--ink-soft);
+    text-align:center;
+  }
+  .hidden{display:none;}
+  @media (prefers-reduced-motion: no-preference){ .slip.show{animation:stamp .35s ease-out;} }
+  @keyframes stamp{
+    from{opacity:0; transform:scale(.97) translateY(4px);}
+    to{opacity:1; transform:scale(1) translateY(0);}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <p class="kicker">FOR NIGERIAN STUDENTS</p>
+    <h1>Know your numbers before the school does.</h1>
+    <p class="lede">Work out your O'Level aggregate for admission, or your semester CGPA — right here, no signup, no waiting for a portal.</p>
+  </div>
+</header>
+
+<div class="tabbar">
+  <div class="tab active" id="tab-waec" onclick="switchTab('waec')">O'Level Aggregate</div>
+  <div class="tab" id="tab-cgpa" onclick="switchTab('cgpa')">CGPA Calculator</div>
+</div>
+
+<main>
+  <div class="sheet" id="panel-waec">
+    <p class="field-note">Enter your grade for each subject. Your aggregate is the sum of points for your best 6 subjects — lower is better (WAEC/NECO scale: A1 = 1 point, F9 = 9 points).</p>
+    <div class="rows-wrap" id="waec-rows"></div>
+    <div class="btnbar">
+      <button class="btn-ghost" onclick="addWaecRow()">+ Add subject</button>
+      <button class="btn-primary" onclick="calcWaec()">Calculate aggregate</button>
+    </div>
+    <div class="slip" id="waec-slip">
+      <div class="slip-head">
+        <span class="slip-title">RESULT</span>
+        <span id="waec-subject-count"></span>
+      </div>
+      <div class="slip-figure" id="waec-figure">— <small>points</small></div>
+      <div class="slip-label">Aggregate score (best 6 subjects, lower is stronger)</div>
+      <div class="slip-remark" id="waec-remark"></div>
+    </div>
+  </div>
+
+  <div class="sheet hidden" id="panel-cgpa">
+    <p class="field-note">Add each course with its unit load and the grade you got (or expect). We'll work out your GPA on the scale you pick.</p>
+    <div class="scale-toggle">
+      Scale:
+      <label><input type="radio" name="scale" value="5" checked onclick="renderCgpaRows()"> 5.0</label>
+      <label><input type="radio" name="scale" value="4" onclick="renderCgpaRows()"> 4.0</label>
+    </div>
+    <div class="cgpa-head">
+      <span>COURSE</span><span>UNITS</span><span>GRADE</span><span></span>
+    </div>
+    <div id="cgpa-rows"></div>
+    <div class="btnbar">
+      <button class="btn-ghost" onclick="addCgpaRow()">+ Add course</button>
+      <button class="btn-primary" onclick="calcCgpa()">Calculate CGPA</button>
+    </div>
+    <div class="slip" id="cgpa-slip">
+      <div class="slip-head">
+        <span class="slip-title">RESULT</span>
+        <span id="cgpa-unit-count"></span>
+      </div>
+      <div class="slip-figure" id="cgpa-figure">—</div>
+      <div class="slip-label" id="cgpa-scale-label"></div>
+      <div class="slip-remark" id="cgpa-remark"></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  Figures are estimates to help you plan — always confirm against your official result or transcript.
+</footer>
+
+<script>
+  function switchTab(name){
+    document.getElementById('tab-waec').classList.toggle('active', name==='waec');
+    document.getElementById('tab-cgpa').classList.toggle('active', name==='cgpa');
+    document.getElementById('panel-waec').classList.toggle('hidden', name!=='waec');
+    document.getElementById('panel-cgpa').classList.toggle('hidden', name!=='cgpa');
+  }
+  const waecGrades = ['A1','B2','B3','C4','C5','C6','D7','E8','F9'];
+  const waecPoints = {A1:1,B2:2,B3:3,C4:4,C5:5,C6:6,D7:7,E8:8,F9:9};
+  let waecCount = 0;
+  function addWaecRow(subjectName){
+    waecCount++;
+    const wrap = document.getElementById('waec-rows');
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.innerHTML = `
+      <span class="row-num">${String(waecCount).padStart(2,'0')}</span>
+      <input type="text" placeholder="Subject (e.g. Mathematics)" value="${subjectName||''}">
+      <select>${waecGrades.map(g=>`<option value="${g}">${g}</option>`).join('')}</select>
+    `;
+    wrap.appendChild(row);
+  }
+  ['English Language','Mathematics','','','',''].forEach(addWaecRow);
+  function calcWaec(){
+    const rows = document.querySelectorAll('#waec-rows .row');
+    let entries = [];
+    rows.forEach(r=>{
+      const grade = r.querySelector('select').value;
+      entries.push(waecPoints[grade]);
+    });
+    entries.sort((a,b)=>a-b);
+    const best6 = entries.slice(0,6);
+    const total = best6.reduce((a,b)=>a+b,0);
+    document.getElementById('waec-figure').innerHTML = total + ' <small>points</small>';
+    document.getElementById('waec-subject-count').textContent = entries.length + ' SUBJECT' + (entries.length===1?'':'S') + ' ENTERED';
+    const remarkEl = document.getElementById('waec-remark');
+    if(total <= 15){
+      remarkEl.innerHTML = '<span class="remark-good">Strong aggregate.</span> This is competitive for most course and institution combinations.';
+    } else if(total <= 24){
+      remarkEl.innerHTML = '<span class="remark-mid">Solid aggregate.</span> Should be workable for many courses — check the specific cut-off for your target course.';
+    } else {
+      remarkEl.innerHTML = '<span class="remark-low">Tighter aggregate.</span> Competitive courses may be harder to reach with this — consider a resit for your weakest subjects if you have time.';
+    }
+    const slip = document.getElementById('waec-slip');
+    slip.classList.remove('show');
+    void slip.offsetWidth;
+    slip.classList.add('show');
+  }
+  let cgpaCount = 0;
+  const gradeLabels5 = ['A (5.0)','B (4.0)','C (3.0)','D (2.0)','E (1.0)','F (0.0)'];
+  const gradeVals5   = [5,4,3,2,1,0];
+  const gradeLabels4 = ['A (4.0)','B (3.0)','C (2.0)','D (1.0)','F (0.0)'];
+  const gradeVals4   = [4,3,2,1,0];
+  function currentScale(){ return document.querySelector('input[name="scale"]:checked').value; }
+  function gradeOptions(){
+    const scale = currentScale();
+    const labels = scale === '5' ? gradeLabels5 : gradeLabels4;
+    const vals = scale === '5' ? gradeVals5 : gradeVals4;
+    return labels.map((l,i)=>`<option value="${vals[i]}">${l}</option>`).join('');
+  }
+  function addCgpaRow(courseName, units){
+    cgpaCount++;
+    const wrap = document.getElementById('cgpa-rows');
+    const row = document.createElement('div');
+    row.className = 'cgpa-row';
+    row.innerHTML = `
+      <input type="text" placeholder="Course code / title" value="${courseName||''}">
+      <input type="text" placeholder="e.g. 3" value="${units||''}">
+      <select class="grade-select">${gradeOptions()}</select>
+      <button class="remove-btn" onclick="this.closest('.cgpa-row').remove()" aria-label="Remove course">×</button>
+    `;
+    wrap.appendChild(row);
+  }
+  function renderCgpaRows(){
+    document.querySelectorAll('#cgpa-rows .cgpa-row').forEach(row=>{
+      const sel = row.querySelector('.grade-select');
+      sel.innerHTML = gradeOptions();
+    });
+  }
+  for(let i=0;i<4;i++) addCgpaRow();
+  function calcCgpa(){
+    const rows = document.querySelectorAll('#cgpa-rows .cgpa-row');
+    let totalUnits = 0, totalPoints = 0, courseCount = 0;
+    rows.forEach(r=>{
+      const unitsRaw = r.querySelectorAll('input')[1].value;
+      const units = parseFloat(unitsRaw);
+      const gradeVal = parseFloat(r.querySelector('.grade-select').value);
+      if(!isNaN(units) && units > 0){
+        totalUnits += units;
+        totalPoints += units * gradeVal;
+        courseCount++;
+      }
+    });
+    const scale = currentScale();
+    const gpa = totalUnits > 0 ? (totalPoints/totalUnits) : 0;
+    document.getElementById('cgpa-figure').textContent = gpa.toFixed(2);
+    document.getElementById('cgpa-unit-count').textContent = courseCount + ' COURSE' + (courseCount===1?'':'S') + ' · ' + totalUnits + ' UNITS';
+    document.getElementById('cgpa-scale-label').textContent = 'GPA on a ' + scale + '.0 scale';
+    const remarkEl = document.getElementById('cgpa-remark');
+    const ratio = gpa / parseFloat(scale);
+    if(ratio >= 0.9){
+      remarkEl.innerHTML = '<span class="remark-good">First class range.</span> Excellent standing — keep this up.';
+    } else if(ratio >= 0.7){
+      remarkEl.innerHTML = '<span class="remark-good">Second class upper range.</span> Strong standing.';
+    } else if(ratio >= 0.5){
+      remarkEl.innerHTML = '<span class="remark-mid">Second class lower range.</span> Room to push higher next semester.';
+    } else {
+      remarkEl.innerHTML = '<span class="remark-low">Below second class lower.</span> Focus on your heaviest-unit courses next semester — they move the number most.';
+    }
+    const slip = document.getElementById('cgpa-slip');
+    slip.classList.remove('show');
+    void slip.offsetWidth;
+    slip.classList.add('show');
+  }
+</script>
+
+</body>
+</html>
