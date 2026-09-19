@@ -31,7 +31,10 @@
     -webkit-font-smoothing:antialiased;
   }
   ::selection{background:var(--gold);color:var(--navy-deep);}
+
   a{color:inherit;}
+
+  /* HEADER */
   header{
     background:var(--navy);
     color:var(--white);
@@ -47,7 +50,11 @@
       repeating-linear-gradient(90deg, rgba(201,150,47,0.06) 0 1px, transparent 1px 42px);
     pointer-events:none;
   }
-  .header-inner{ max-width:760px; margin:0 auto; position:relative; }
+  .header-inner{
+    max-width:760px;
+    margin:0 auto;
+    position:relative;
+  }
   .kicker{
     font-family:'IBM Plex Mono',monospace;
     font-size:.72rem;
@@ -63,7 +70,14 @@
     margin:0 0 .8rem;
     max-width:14ch;
   }
-  header p.lede{ font-size:1.02rem; color:#cdd3e4; max-width:46ch; margin:0; }
+  header p.lede{
+    font-size:1.02rem;
+    color:#cdd3e4;
+    max-width:46ch;
+    margin:0;
+  }
+
+  /* TABS */
   .tabbar{
     max-width:760px;
     margin:-1.4rem auto 0;
@@ -89,14 +103,24 @@
   }
   .tab:first-child{border-top-left-radius:3px;}
   .tab:last-child{border-top-right-radius:3px;}
-  .tab.active{ color:var(--navy); box-shadow:inset 0 3px 0 var(--gold); }
-  main{ max-width:760px; margin:0 auto; padding:0 1.5rem 4rem; }
+  .tab.active{
+    color:var(--navy);
+    box-shadow:inset 0 3px 0 var(--gold);
+  }
+
+  main{
+    max-width:760px;
+    margin:0 auto;
+    padding:0 1.5rem 4rem;
+  }
+
   .sheet{
     background:var(--white);
     border:1px solid var(--paper-line);
     border-radius:0 0 4px 4px;
     padding:1.8rem 1.6rem 2rem;
   }
+
   .field-note{
     font-size:.88rem;
     color:var(--ink-soft);
@@ -104,6 +128,8 @@
     padding-bottom:1.2rem;
     border-bottom:1px dashed var(--paper-line);
   }
+
+  /* subject rows */
   .row{
     display:grid;
     grid-template-columns:2.2rem 1fr 6.5rem;
@@ -111,7 +137,11 @@
     align-items:center;
     padding:.5rem 0;
   }
-  .row-num{ font-family:'IBM Plex Mono',monospace; font-size:.78rem; color:var(--ink-soft); }
+  .row-num{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.78rem;
+    color:var(--ink-soft);
+  }
   input[type=text], select{
     width:100%;
     font-family:'IBM Plex Sans',sans-serif;
@@ -124,7 +154,9 @@
   }
   select{appearance:none; background:var(--paper) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="6"><path d="M0 0l5 6 5-6z" fill="%235b5648"/></svg>') no-repeat right .7rem center; padding-right:1.8rem;}
   input:focus, select:focus{outline:2px solid var(--gold); outline-offset:1px;}
+
   .rows-wrap{margin-bottom:1.2rem;}
+
   .btnbar{display:flex; gap:.7rem; flex-wrap:wrap; margin-top:.6rem;}
   button{
     font-family:'IBM Plex Sans',sans-serif;
@@ -139,6 +171,8 @@
   .btn-primary:hover{background:var(--navy-deep);}
   .btn-ghost{background:transparent; color:var(--navy); border-color:#c9c3ae;}
   .btn-ghost:hover{border-color:var(--navy);}
+
+  /* result slip */
   .slip{
     margin-top:1.8rem;
     border:1px solid var(--gold);
@@ -176,6 +210,8 @@
   .remark-good{color:var(--green); font-weight:600;}
   .remark-mid{color:var(--gold); font-weight:600;}
   .remark-low{color:var(--red); font-weight:600;}
+
+  /* CGPA table */
   .cgpa-head{
     display:grid;
     grid-template-columns:1fr 5rem 6.5rem 2rem;
@@ -192,10 +228,13 @@
     align-items:center;
     padding:.4rem 0;
   }
-  .remove-btn{ background:none; border:none; color:var(--ink-soft); font-size:1.1rem; cursor:pointer; padding:0; }
+  .remove-btn{
+    background:none; border:none; color:var(--ink-soft); font-size:1.1rem; cursor:pointer; padding:0;
+  }
   .remove-btn:hover{color:var(--red);}
   .scale-toggle{display:flex; gap:.5rem; align-items:center; margin-bottom:1rem; font-size:.88rem; color:var(--ink-soft);}
   .scale-toggle label{display:flex; gap:.35rem; align-items:center; cursor:pointer;}
+
   footer{
     max-width:760px;
     margin:0 auto;
@@ -204,8 +243,12 @@
     color:var(--ink-soft);
     text-align:center;
   }
+
   .hidden{display:none;}
-  @media (prefers-reduced-motion: no-preference){ .slip.show{animation:stamp .35s ease-out;} }
+
+  @media (prefers-reduced-motion: no-preference){
+    .slip.show{animation:stamp .35s ease-out;}
+  }
   @keyframes stamp{
     from{opacity:0; transform:scale(.97) translateY(4px);}
     to{opacity:1; transform:scale(1) translateY(0);}
@@ -230,11 +273,14 @@
 <main>
   <div class="sheet" id="panel-waec">
     <p class="field-note">Enter your grade for each subject. Your aggregate is the sum of points for your best 6 subjects — lower is better (WAEC/NECO scale: A1 = 1 point, F9 = 9 points).</p>
+
     <div class="rows-wrap" id="waec-rows"></div>
+
     <div class="btnbar">
       <button class="btn-ghost" onclick="addWaecRow()">+ Add subject</button>
       <button class="btn-primary" onclick="calcWaec()">Calculate aggregate</button>
     </div>
+
     <div class="slip" id="waec-slip">
       <div class="slip-head">
         <span class="slip-title">RESULT</span>
@@ -243,24 +289,29 @@
       <div class="slip-figure" id="waec-figure">— <small>points</small></div>
       <div class="slip-label">Aggregate score (best 6 subjects, lower is stronger)</div>
       <div class="slip-remark" id="waec-remark"></div>
+      <button class="btn-ghost" style="margin-top:1.2rem;" onclick="shareWaecImage()">📤 Save / share result</button>
     </div>
   </div>
 
   <div class="sheet hidden" id="panel-cgpa">
     <p class="field-note">Add each course with its unit load and the grade you got (or expect). We'll work out your GPA on the scale you pick.</p>
+
     <div class="scale-toggle">
       Scale:
       <label><input type="radio" name="scale" value="5" checked onclick="renderCgpaRows()"> 5.0</label>
       <label><input type="radio" name="scale" value="4" onclick="renderCgpaRows()"> 4.0</label>
     </div>
+
     <div class="cgpa-head">
       <span>COURSE</span><span>UNITS</span><span>GRADE</span><span></span>
     </div>
     <div id="cgpa-rows"></div>
+
     <div class="btnbar">
       <button class="btn-ghost" onclick="addCgpaRow()">+ Add course</button>
       <button class="btn-primary" onclick="calcCgpa()">Calculate CGPA</button>
     </div>
+
     <div class="slip" id="cgpa-slip">
       <div class="slip-head">
         <span class="slip-title">RESULT</span>
@@ -269,6 +320,7 @@
       <div class="slip-figure" id="cgpa-figure">—</div>
       <div class="slip-label" id="cgpa-scale-label"></div>
       <div class="slip-remark" id="cgpa-remark"></div>
+      <button class="btn-ghost" style="margin-top:1.2rem;" onclick="shareCgpaImage()">📤 Save / share result</button>
     </div>
   </div>
 </main>
@@ -278,15 +330,19 @@
 </footer>
 
 <script>
+  // ---------- TABS ----------
   function switchTab(name){
     document.getElementById('tab-waec').classList.toggle('active', name==='waec');
     document.getElementById('tab-cgpa').classList.toggle('active', name==='cgpa');
     document.getElementById('panel-waec').classList.toggle('hidden', name!=='waec');
     document.getElementById('panel-cgpa').classList.toggle('hidden', name!=='cgpa');
   }
+
+  // ---------- WAEC ----------
   const waecGrades = ['A1','B2','B3','C4','C5','C6','D7','E8','F9'];
   const waecPoints = {A1:1,B2:2,B3:3,C4:4,C5:5,C6:6,D7:7,E8:8,F9:9};
   let waecCount = 0;
+
   function addWaecRow(subjectName){
     waecCount++;
     const wrap = document.getElementById('waec-rows');
@@ -299,7 +355,9 @@
     `;
     wrap.appendChild(row);
   }
+
   ['English Language','Mathematics','','','',''].forEach(addWaecRow);
+
   function calcWaec(){
     const rows = document.querySelectorAll('#waec-rows .row');
     let entries = [];
@@ -310,8 +368,10 @@
     entries.sort((a,b)=>a-b);
     const best6 = entries.slice(0,6);
     const total = best6.reduce((a,b)=>a+b,0);
+
     document.getElementById('waec-figure').innerHTML = total + ' <small>points</small>';
     document.getElementById('waec-subject-count').textContent = entries.length + ' SUBJECT' + (entries.length===1?'':'S') + ' ENTERED';
+
     const remarkEl = document.getElementById('waec-remark');
     if(total <= 15){
       remarkEl.innerHTML = '<span class="remark-good">Strong aggregate.</span> This is competitive for most course and institution combinations.';
@@ -320,23 +380,31 @@
     } else {
       remarkEl.innerHTML = '<span class="remark-low">Tighter aggregate.</span> Competitive courses may be harder to reach with this — consider a resit for your weakest subjects if you have time.';
     }
+
     const slip = document.getElementById('waec-slip');
     slip.classList.remove('show');
     void slip.offsetWidth;
     slip.classList.add('show');
   }
+
+  // ---------- CGPA ----------
   let cgpaCount = 0;
   const gradeLabels5 = ['A (5.0)','B (4.0)','C (3.0)','D (2.0)','E (1.0)','F (0.0)'];
   const gradeVals5   = [5,4,3,2,1,0];
   const gradeLabels4 = ['A (4.0)','B (3.0)','C (2.0)','D (1.0)','F (0.0)'];
   const gradeVals4   = [4,3,2,1,0];
-  function currentScale(){ return document.querySelector('input[name="scale"]:checked').value; }
+
+  function currentScale(){
+    return document.querySelector('input[name="scale"]:checked').value;
+  }
+
   function gradeOptions(){
     const scale = currentScale();
     const labels = scale === '5' ? gradeLabels5 : gradeLabels4;
     const vals = scale === '5' ? gradeVals5 : gradeVals4;
     return labels.map((l,i)=>`<option value="${vals[i]}">${l}</option>`).join('');
   }
+
   function addCgpaRow(courseName, units){
     cgpaCount++;
     const wrap = document.getElementById('cgpa-rows');
@@ -350,13 +418,16 @@
     `;
     wrap.appendChild(row);
   }
+
   function renderCgpaRows(){
     document.querySelectorAll('#cgpa-rows .cgpa-row').forEach(row=>{
       const sel = row.querySelector('.grade-select');
       sel.innerHTML = gradeOptions();
     });
   }
+
   for(let i=0;i<4;i++) addCgpaRow();
+
   function calcCgpa(){
     const rows = document.querySelectorAll('#cgpa-rows .cgpa-row');
     let totalUnits = 0, totalPoints = 0, courseCount = 0;
@@ -370,11 +441,14 @@
         courseCount++;
       }
     });
+
     const scale = currentScale();
     const gpa = totalUnits > 0 ? (totalPoints/totalUnits) : 0;
+
     document.getElementById('cgpa-figure').textContent = gpa.toFixed(2);
     document.getElementById('cgpa-unit-count').textContent = courseCount + ' COURSE' + (courseCount===1?'':'S') + ' · ' + totalUnits + ' UNITS';
     document.getElementById('cgpa-scale-label').textContent = 'GPA on a ' + scale + '.0 scale';
+
     const remarkEl = document.getElementById('cgpa-remark');
     const ratio = gpa / parseFloat(scale);
     if(ratio >= 0.9){
@@ -386,10 +460,165 @@
     } else {
       remarkEl.innerHTML = '<span class="remark-low">Below second class lower.</span> Focus on your heaviest-unit courses next semester — they move the number most.';
     }
+
     const slip = document.getElementById('cgpa-slip');
     slip.classList.remove('show');
     void slip.offsetWidth;
     slip.classList.add('show');
+  }
+
+  // ---------- SHARE AS IMAGE ----------
+  function stripTags(html){
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return (div.textContent || div.innerText || '').trim();
+  }
+
+  function roundRect(ctx,x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.arcTo(x+w,y,x+w,y+h,r);
+    ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r);
+    ctx.arcTo(x,y,x+w,y,r);
+    ctx.closePath();
+  }
+
+  function wrapTextCentered(ctx, text, cx, y, maxWidth, lineHeight){
+    ctx.textAlign = 'center';
+    const words = text.split(' ');
+    let line = '', curY = y, lines = 0;
+    for(let n=0;n<words.length;n++){
+      const testLine = line + words[n] + ' ';
+      if(ctx.measureText(testLine).width > maxWidth && n>0){
+        ctx.fillText(line, cx, curY);
+        line = words[n] + ' ';
+        curY += lineHeight;
+        lines++;
+      } else {
+        line = testLine;
+      }
+    }
+    ctx.fillText(line, cx, curY);
+    return lines+1;
+  }
+
+  function buildSlipImage(opts, callback){
+    const W = 640, H = 900;
+    const canvas = document.createElement('canvas');
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = '#f6f3ea';
+    ctx.fillRect(0,0,W,H);
+
+    ctx.fillStyle = '#182548';
+    ctx.fillRect(0,0,W,170);
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#e0ab3e';
+    ctx.font = '600 14px "IBM Plex Sans", sans-serif';
+    ctx.fillText('SCORESHEET · FOR NIGERIAN STUDENTS', 40, 55);
+
+    ctx.fillStyle = '#fffdf8';
+    ctx.font = '700 28px "Source Serif 4", serif';
+    ctx.fillText(opts.heading, 40, 105);
+
+    ctx.strokeStyle = '#c9962f';
+    ctx.lineWidth = 2;
+    roundRect(ctx, 40, 210, W-80, 430, 6);
+    ctx.stroke();
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#182548';
+    ctx.font = '700 88px "Source Serif 4", serif';
+    ctx.fillText(opts.bigNumber, W/2, 370);
+
+    if(opts.bigNumberSuffix){
+      ctx.font = '400 20px "IBM Plex Sans", sans-serif';
+      ctx.fillStyle = '#5b5648';
+      ctx.fillText(opts.bigNumberSuffix, W/2, 402);
+    }
+
+    ctx.font = '400 15px "IBM Plex Sans", sans-serif';
+    ctx.fillStyle = '#5b5648';
+    ctx.fillText(opts.subLabel, W/2, 450);
+
+    ctx.font = '600 18px "IBM Plex Sans", sans-serif';
+    ctx.fillStyle = opts.remarkColor;
+    wrapTextCentered(ctx, opts.remarkText, W/2, 520, W-170, 26);
+
+    ctx.fillStyle = '#182548';
+    ctx.font = '500 14px "IBM Plex Mono", monospace';
+    ctx.fillText('Check yours free at', W/2, 800);
+    ctx.font = '700 20px "IBM Plex Mono", monospace';
+    ctx.fillText('naijascore.github.io', W/2, 830);
+
+    if(document.fonts && document.fonts.ready){
+      document.fonts.ready.then(()=>callback(canvas));
+    } else {
+      callback(canvas);
+    }
+  }
+
+  function saveOrShareCanvas(canvas, filename){
+    canvas.toBlob(function(blob){
+      if(!blob) return;
+      const file = new File([blob], filename, {type:'image/png'});
+      if(navigator.canShare && navigator.canShare({files:[file]})){
+        navigator.share({files:[file], title:'My Scoresheet result'}).catch(()=>{
+          triggerDownload(blob, filename);
+        });
+      } else {
+        triggerDownload(blob, filename);
+      }
+    }, 'image/png');
+  }
+
+  function triggerDownload(blob, filename){
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function remarkColorFor(containerId){
+    const span = document.querySelector('#'+containerId+' span');
+    if(!span) return '#3f6b4c';
+    if(span.classList.contains('remark-mid')) return '#c9962f';
+    if(span.classList.contains('remark-low')) return '#a8402f';
+    return '#3f6b4c';
+  }
+
+  function shareWaecImage(){
+    const total = document.getElementById('waec-figure').textContent.split(' ')[0].trim();
+    buildSlipImage({
+      heading: "MY O'LEVEL AGGREGATE",
+      bigNumber: total,
+      bigNumberSuffix: 'points',
+      subLabel: document.getElementById('waec-subject-count').textContent,
+      remarkText: stripTags(document.getElementById('waec-remark').innerHTML),
+      remarkColor: remarkColorFor('waec-remark')
+    }, function(canvas){
+      saveOrShareCanvas(canvas, 'my-waec-aggregate.png');
+    });
+  }
+
+  function shareCgpaImage(){
+    const gpa = document.getElementById('cgpa-figure').textContent.trim();
+    buildSlipImage({
+      heading: 'MY CGPA RESULT',
+      bigNumber: gpa,
+      bigNumberSuffix: '',
+      subLabel: document.getElementById('cgpa-unit-count').textContent + ' · ' + document.getElementById('cgpa-scale-label').textContent,
+      remarkText: stripTags(document.getElementById('cgpa-remark').innerHTML),
+      remarkColor: remarkColorFor('cgpa-remark')
+    }, function(canvas){
+      saveOrShareCanvas(canvas, 'my-cgpa-result.png');
+    });
   }
 </script>
 
