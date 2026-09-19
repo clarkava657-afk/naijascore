@@ -268,6 +268,7 @@
 <div class="tabbar">
   <div class="tab active" id="tab-waec" onclick="switchTab('waec')">O'Level Aggregate</div>
   <div class="tab" id="tab-cgpa" onclick="switchTab('cgpa')">CGPA Calculator</div>
+  <div class="tab" id="tab-jamb" onclick="switchTab('jamb')">JAMB Score</div>
 </div>
 
 <main>
@@ -323,6 +324,28 @@
       <button class="btn-ghost" style="margin-top:1.2rem;" onclick="shareCgpaImage()">📤 Save / share result</button>
     </div>
   </div>
+
+  <div class="sheet hidden" id="panel-jamb">
+    <p class="field-note">Enter your score in each of the 4 UTME subjects (English Language plus 3 others). Each subject is out of 100 — total is out of 400.</p>
+    <p style="font-size:.82rem; color:var(--ink-soft); margin:-0.8rem 0 1.4rem; font-style:italic;">This is not an official JAMB result and does not check admission status — always confirm your real score on the JAMB portal.</p>
+
+    <div class="rows-wrap" id="jamb-rows"></div>
+
+    <div class="btnbar">
+      <button class="btn-primary" onclick="calcJamb()">Calculate JAMB score</button>
+    </div>
+
+    <div class="slip" id="jamb-slip">
+      <div class="slip-head">
+        <span class="slip-title">RESULT</span>
+        <span id="jamb-subject-count"></span>
+      </div>
+      <div class="slip-figure" id="jamb-figure">— <small>/ 400</small></div>
+      <div class="slip-label">Total UTME score across 4 subjects</div>
+      <div class="slip-remark" id="jamb-remark"></div>
+      <button class="btn-ghost" style="margin-top:1.2rem;" onclick="shareJambImage()">📤 Save / share result</button>
+    </div>
+  </div>
 </main>
 
 <footer>
@@ -334,8 +357,10 @@
   function switchTab(name){
     document.getElementById('tab-waec').classList.toggle('active', name==='waec');
     document.getElementById('tab-cgpa').classList.toggle('active', name==='cgpa');
+    document.getElementById('tab-jamb').classList.toggle('active', name==='jamb');
     document.getElementById('panel-waec').classList.toggle('hidden', name!=='waec');
     document.getElementById('panel-cgpa').classList.toggle('hidden', name!=='cgpa');
+    document.getElementById('panel-jamb').classList.toggle('hidden', name!=='jamb');
   }
 
   // ---------- WAEC ----------
@@ -462,6 +487,58 @@
     }
 
     const slip = document.getElementById('cgpa-slip');
+    slip.classList.remove('show');
+    void slip.offsetWidth;
+    slip.classList.add('show');
+  }
+
+  // ---------- JAMB ----------
+  function addJambRow(subjectName, locked){
+    const wrap = document.getElementById('jamb-rows');
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.innerHTML = `
+      <span class="row-num">${locked ? '★' : '·'}</span>
+      <input type="text" placeholder="Subject" value="${subjectName||''}" ${locked?'readonly':''}>
+      <input type="text" placeholder="0-100" class="jamb-score" inputmode="numeric">
+    `;
+    wrap.appendChild(row);
+  }
+
+  addJambRow('English Language', true);
+  addJambRow('');
+  addJambRow('');
+  addJambRow('');
+
+  function calcJamb(){
+    const rows = document.querySelectorAll('#jamb-rows .row');
+    let total = 0, filled = 0;
+    rows.forEach(r=>{
+      const raw = r.querySelector('.jamb-score').value;
+      let val = parseFloat(raw);
+      if(isNaN(val)) val = 0;
+      val = Math.max(0, Math.min(100, val));
+      total += val;
+      if(raw !== '') filled++;
+    });
+
+    document.getElementById('jamb-figure').innerHTML = total + ' <small>/ 400</small>';
+    document.getElementById('jamb-subject-count').textContent = filled + ' OF 4 SUBJECTS ENTERED';
+
+    const remarkEl = document.getElementById('jamb-remark');
+    if(total >= 300){
+      remarkEl.innerHTML = '<span class="remark-good">Excellent score.</span> Highly competitive — within range for Medicine, Law and other high-demand courses at top universities.';
+    } else if(total >= 250){
+      remarkEl.innerHTML = '<span class="remark-good">Very good score.</span> Competitive for most courses at most universities — check the cut-off mark for your target course.';
+    } else if(total >= 200){
+      remarkEl.innerHTML = '<span class="remark-mid">Good score.</span> Workable for many courses — some competitive courses at top universities may need higher.';
+    } else if(total >= 160){
+      remarkEl.innerHTML = '<span class="remark-mid">Fair score.</span> Meets the minimum many institutions require, but course options may be limited — check specific cut-offs.';
+    } else {
+      remarkEl.innerHTML = '<span class="remark-low">Below typical cut-off.</span> Most universities require at least 160+ for admission consideration — check the current requirement for JAMB and your target school.';
+    }
+
+    const slip = document.getElementById('jamb-slip');
     slip.classList.remove('show');
     void slip.offsetWidth;
     slip.classList.add('show');
@@ -618,6 +695,20 @@
       remarkColor: remarkColorFor('cgpa-remark')
     }, function(canvas){
       saveOrShareCanvas(canvas, 'my-cgpa-result.png');
+    });
+  }
+
+  function shareJambImage(){
+    const total = document.getElementById('jamb-figure').textContent.split('/')[0].trim();
+    buildSlipImage({
+      heading: 'MY JAMB SCORE',
+      bigNumber: total,
+      bigNumberSuffix: '/ 400',
+      subLabel: document.getElementById('jamb-subject-count').textContent,
+      remarkText: stripTags(document.getElementById('jamb-remark').innerHTML),
+      remarkColor: remarkColorFor('jamb-remark')
+    }, function(canvas){
+      saveOrShareCanvas(canvas, 'my-jamb-score.png');
     });
   }
 </script>
